@@ -270,6 +270,33 @@ body {
   font-weight: 650;
 }
 
+.field-label {
+  color: #3b332a;
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 700;
+  gap: 0.45rem;
+}
+
+.field-input {
+  background: #f7f5ef;
+  border: 1px solid rgba(23, 19, 13, 0.14);
+  border-radius: 6px;
+  color: #17130d;
+  font: inherit;
+  min-height: 2.9rem;
+  outline: none;
+  padding: 0.7rem 0.8rem;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.field-input:focus {
+  border-color: #17130d;
+  box-shadow: 0 0 0 3px rgba(246, 196, 83, 0.32);
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;

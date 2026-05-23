@@ -12,6 +12,7 @@ import {
   Sparkles,
   Workflow,
 } from "lucide-react";
+import Link from "next/link";
 
 const stack = [
   "Next.js App Router",
@@ -116,6 +117,9 @@ export default function Home() {
             <a className="nav-link" href="#work">
               Work
             </a>
+            <Link className="nav-link" href="/demo">
+              Demo
+            </Link>
             <a className="nav-link" href="#services">
               Services
             </a>
@@ -148,6 +152,10 @@ export default function Home() {
                 <LayoutDashboard size={18} />
                 View work
               </a>
+              <Link className="secondary-action" href="/demo">
+                <Database size={18} />
+                Live demo
+              </Link>
               <a className="secondary-action" href="#process">
                 <GitBranch size={18} />
                 First PR process
@@ -338,7 +346,7 @@ export default function Home() {
               </p>
             </div>
             <div className="rounded-md bg-[#f7f5ef] p-5 font-mono text-sm leading-7 text-[#3b332a]">
-              <p>Next.js App Router project: this portfolio and booking workflow case study.</p>
+              <p>Next.js App Router project: this portfolio with live Supabase demo.</p>
               <p>Tricky TypeScript fix: DB row types, API payloads, and optional UI fields.</p>
               <p>Timezone: Asia/Bangkok (UTC+7), async friendly.</p>
             </div>

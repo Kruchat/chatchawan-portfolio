@@ -9,6 +9,7 @@ Standalone Next.js App Router portfolio for Upwork proposals. This project is se
 - TypeScript
 - Tailwind CSS 4
 - lucide-react
+- Supabase
 
 ## Local Development
 
@@ -17,6 +18,24 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+## Live Demo Backend
+
+The demo backoffice uses a real Supabase project and server-side Next.js route handlers.
+
+- `/demo` - public client demo with live lead intake
+- `/demo/backoffice` - operations-style backoffice view
+- `/api/demo/overview` - read live demo data
+- `/api/demo/leads` - create a demo lead
+
+Required environment variables:
+
+```bash
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+The service role key must stay server-side only. Do not expose it as `NEXT_PUBLIC_...`.
 
 ## Verification
 
