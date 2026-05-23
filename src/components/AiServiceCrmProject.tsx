@@ -10,6 +10,7 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
+import type { ProjectClientCopy } from "@/lib/i18n";
 import type { DemoLead, DemoOverview } from "@/lib/demo-backoffice";
 
 type ProjectForm = {
@@ -33,31 +34,6 @@ const initialForm: ProjectForm = {
   budget: "$1k - $3k",
   urgency: "Launch MVP in 2 weeks",
 };
-
-const industries = [
-  "Travel agency",
-  "School / education",
-  "Local government office",
-  "Clinic / service business",
-  "Online service team",
-];
-
-const channels = [
-  "Website chatbot + CRM",
-  "LINE OA automation",
-  "Booking dashboard",
-  "Admin reporting system",
-  "API integration",
-];
-
-const budgets = ["Discovery", "$500 - $1k", "$1k - $3k", "$3k+"];
-
-const urgencyOptions = [
-  "Need discovery first",
-  "Launch MVP in 2 weeks",
-  "Fix an existing system",
-  "Scale current workflow",
-];
 
 function toService(channel: string): DemoLead["service"] {
   if (channel.includes("chatbot") || channel.includes("LINE")) {
@@ -93,54 +69,48 @@ function buildScore(form: ProjectForm) {
   return Math.min(score, 98);
 }
 
-function buildPlan(form: ProjectForm) {
+function buildPlan(form: ProjectForm, copy: ProjectClientCopy) {
   const service = toService(form.channel);
 
   if (service === "AI chatbot") {
-    return [
-      "Map customer questions and handoff rules",
-      "Build Next.js intake UI and API route",
-      "Store leads and conversation notes in Supabase",
-      "Prepare admin review screen for the team",
-    ];
+    return copy.plans.aiChatbot;
   }
 
   if (service === "Booking system") {
-    return [
-      "Design booking request flow and status model",
-      "Create Supabase records for requests and activity",
-      "Build operations dashboard for follow-up",
-      "Deploy MVP and test mobile form behavior",
-    ];
+    return copy.plans.bookingSystem;
   }
 
   if (service === "Dashboard") {
-    return [
-      "Audit current data fields and reporting needs",
-      "Create typed data layer and summary metrics",
-      "Build responsive dashboard screens",
-      "Document handoff and next iteration items",
-    ];
+    return copy.plans.dashboard;
   }
 
-  return [
-    "Confirm API payloads and authentication needs",
-    "Build a small integration endpoint first",
-    "Log success and failure events clearly",
-    "Ship a scoped PR with deployment notes",
-  ];
+  return copy.plans.apiIntegration;
 }
 
-export function AiServiceCrmProject({ initialOverview }: { initialOverview: DemoOverview }) {
+function renderTemplate(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (output, [key, value]) => output.replaceAll(`{{${key}}}`, String(value)),
+    template,
+  );
+}
+
+export function AiServiceCrmProject({
+  initialOverview,
+  copy,
+}: {
+  initialOverview: DemoOverview;
+  copy: ProjectClientCopy;
+}) {
   const [form, setForm] = useState<ProjectForm>(initialForm);
   const [overview, setOverview] = useState(initialOverview);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
   const leadScore = useMemo(() => buildScore(form), [form]);
-  const plan = useMemo(() => buildPlan(form), [form]);
+  const plan = useMemo(() => buildPlan(form, copy), [copy, form]);
   const service = toService(form.channel);
   const liveLeads = overview.leads.slice(0, 5);
+  const suggestedMilestone = copy.lowercaseSuggestedMilestone ? plan[0].toLowerCase() : plan[0];
 
   function updateField(field: keyof ProjectForm, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -185,13 +155,13 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
 
     if (!response.ok) {
       setStatus("error");
-      setMessage(payload?.error ?? "Could not save this demo request.");
+      setMessage(payload?.error ?? copy.errorMessage);
       return;
     }
 
     await refreshOverview();
     setStatus("success");
-    setMessage("Saved to the live Supabase database. The operations feed below is updated.");
+    setMessage(copy.successMessage);
   }
 
   return (
@@ -200,14 +170,14 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
         <div className="border-b border-[#17130d]/10 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="eyebrow">Customer playground</p>
+              <p className="eyebrow">{copy.customerPlayground}</p>
               <h2 className="mt-2 text-3xl font-semibold leading-tight">
-                Try the AI intake workflow
+                {copy.tryWorkflow}
               </h2>
             </div>
             <span className="inline-flex items-center gap-2 rounded-md bg-[#17130d] px-3 py-2 font-mono text-sm font-semibold text-[#f7f5ef]">
               <Database size={16} />
-              {overview.configured && !overview.error ? "Live database" : "Demo mode"}
+              {overview.configured && !overview.error ? copy.liveDatabase : copy.demoMode}
             </span>
           </div>
         </div>
@@ -215,7 +185,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
         <form onSubmit={handleSubmit} className="grid gap-5 p-5">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="field-label">
-              Contact name
+              {copy.contactName}
               <input
                 className="field-input"
                 value={form.name}
@@ -224,7 +194,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               />
             </label>
             <label className="field-label">
-              Company
+              {copy.company}
               <input
                 className="field-input"
                 value={form.company}
@@ -233,7 +203,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               />
             </label>
             <label className="field-label">
-              Email
+              {copy.email}
               <input
                 className="field-input"
                 type="email"
@@ -242,43 +212,49 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               />
             </label>
             <label className="field-label">
-              Industry
+              {copy.industry}
               <select
                 className="field-input"
                 value={form.industry}
                 onChange={(event) => updateField("industry", event.target.value)}
               >
-                {industries.map((industry) => (
-                  <option key={industry}>{industry}</option>
+                {copy.industries.map((industry) => (
+                  <option key={industry.value} value={industry.value}>
+                    {industry.label}
+                  </option>
                 ))}
               </select>
             </label>
             <label className="field-label">
-              Workflow
+              {copy.workflow}
               <select
                 className="field-input"
                 value={form.channel}
                 onChange={(event) => updateField("channel", event.target.value)}
               >
-                {channels.map((channel) => (
-                  <option key={channel}>{channel}</option>
+                {copy.channels.map((channel) => (
+                  <option key={channel.value} value={channel.value}>
+                    {channel.label}
+                  </option>
                 ))}
               </select>
             </label>
             <label className="field-label">
-              Budget
+              {copy.budget}
               <select
                 className="field-input"
                 value={form.budget}
                 onChange={(event) => updateField("budget", event.target.value)}
               >
-                {budgets.map((budget) => (
-                  <option key={budget}>{budget}</option>
+                {copy.budgets.map((budget) => (
+                  <option key={budget.value} value={budget.value}>
+                    {budget.label}
+                  </option>
                 ))}
               </select>
             </label>
             <label className="field-label md:col-span-2">
-              Project goal
+              {copy.projectGoal}
               <textarea
                 className="field-input min-h-32 resize-y"
                 value={form.goal}
@@ -287,14 +263,16 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               />
             </label>
             <label className="field-label md:col-span-2">
-              Timing
+              {copy.timing}
               <select
                 className="field-input"
                 value={form.urgency}
                 onChange={(event) => updateField("urgency", event.target.value)}
               >
-                {urgencyOptions.map((option) => (
-                  <option key={option}>{option}</option>
+                {copy.urgencies.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </label>
@@ -305,13 +283,15 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               <Bot className="mt-1 text-[#0f766e]" size={22} />
               <div>
                 <p className="font-mono text-xs font-semibold uppercase text-[#7a6c5d]">
-                  AI-style qualification
+                  {copy.aiQualification}
                 </p>
                 <p className="mt-2 text-lg font-semibold">
-                  {service} lead, score {leadScore}/100
+                  {renderTemplate(copy.leadScoreTemplate, { service, score: leadScore })}
                 </p>
                 <p className="mt-2 leading-7 text-[#5a5044]">
-                  Suggested first milestone: {plan[0].toLowerCase()}.
+                  {renderTemplate(copy.suggestedFirstMilestoneTemplate, {
+                    milestone: suggestedMilestone,
+                  })}
                 </p>
               </div>
             </div>
@@ -324,7 +304,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
               ) : (
                 <Send size={18} />
               )}
-              Save to live CRM
+              {copy.saveToCrm}
             </button>
             {message ? (
               <p
@@ -345,8 +325,8 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
         <div className="rounded-md border border-[#17130d]/10 bg-[#17130d] p-5 text-[#f7f5ef] shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="eyebrow text-[#f6c453]">Generated plan</p>
-              <h2 className="mt-2 text-3xl font-semibold">What the client sees</h2>
+              <p className="eyebrow text-[#f6c453]">{copy.generatedPlan}</p>
+              <h2 className="mt-2 text-3xl font-semibold">{copy.whatClientSees}</h2>
             </div>
             <Sparkles className="text-[#2dd4bf]" />
           </div>
@@ -363,16 +343,16 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Metric label="Live leads" value={overview.stats.totalLeads} />
-          <Metric label="Hot leads" value={overview.stats.hotLeads} />
-          <Metric label="Open tasks" value={overview.stats.openTasks} />
+          <Metric label={copy.liveLeads} value={overview.stats.totalLeads} />
+          <Metric label={copy.hotLeads} value={overview.stats.hotLeads} />
+          <Metric label={copy.openTasks} value={overview.stats.openTasks} />
         </div>
 
         <div className="rounded-md border border-[#17130d]/10 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="eyebrow">Operations feed</p>
-              <h2 className="mt-2 text-2xl font-semibold">Latest Supabase records</h2>
+              <p className="eyebrow">{copy.operationsFeed}</p>
+              <h2 className="mt-2 text-2xl font-semibold">{copy.latestRecords}</h2>
             </div>
             <Activity className="text-[#0f766e]" />
           </div>
@@ -387,7 +367,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
                   <span className="tech-chip">{lead.service}</span>
                 </div>
                 <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#5a5044]">
-                  {lead.notes || "New lead created from the live demo."}
+                  {lead.notes || copy.fallbackNote}
                 </p>
               </div>
             ))}
@@ -398,8 +378,7 @@ export function AiServiceCrmProject({ initialOverview }: { initialOverview: Demo
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-1 text-emerald-700" />
             <p className="leading-7 text-[#5a5044]">
-              This page is a real Next.js project demo: client interaction, API route,
-              server-side Supabase key, live database writes, and refreshed dashboard data.
+              {copy.proofNote}
             </p>
           </div>
         </div>

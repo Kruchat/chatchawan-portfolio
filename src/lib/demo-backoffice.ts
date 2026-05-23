@@ -59,7 +59,13 @@ const emptyOverview: DemoOverview = {
   },
 };
 
-export async function getDemoOverview(): Promise<DemoOverview> {
+export async function getDemoOverview(
+  options: { leadLimit?: number; taskLimit?: number; eventLimit?: number } = {},
+): Promise<DemoOverview> {
+  const leadLimit = options.leadLimit ?? 12;
+  const taskLimit = options.taskLimit ?? 12;
+  const eventLimit = options.eventLimit ?? 8;
+
   if (!isSupabaseConfigured()) {
     return {
       ...emptyOverview,
@@ -73,17 +79,17 @@ export async function getDemoOverview(): Promise<DemoOverview> {
       .from("demo_leads")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(12),
+      .limit(leadLimit),
     supabase
       .from("demo_tasks")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(12),
+      .limit(taskLimit),
     supabase
       .from("demo_events")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(8),
+      .limit(eventLimit),
   ]);
 
   const error = leadsResult.error ?? tasksResult.error ?? eventsResult.error;
