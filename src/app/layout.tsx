@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chatchawan T. | Next.js AI Automation Developer",
+  title: "Chatchawan T. | Online Systems and AI Automation Developer",
   description:
-    "Portfolio for Next.js App Router, TypeScript, Supabase, AI chatbot, dashboard, and API integration work by Chatchawan T.",
+    "Portfolio and online service sales site for Next.js App Router, TypeScript, Supabase, AI automation, dashboards, and admin systems by Chatchawan T.",
   openGraph: {
-    title: "Chatchawan T. | Next.js AI Automation Developer",
+    title: "Chatchawan T. | Online Systems and AI Automation Developer",
     description:
-      "Next.js App Router, TypeScript, Supabase, AI chatbot, dashboard, and API integration portfolio.",
+      "Next.js App Router, TypeScript, Supabase, AI automation, dashboards, service packages, and admin systems portfolio.",
     type: "website",
   },
 };

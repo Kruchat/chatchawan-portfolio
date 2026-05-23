@@ -823,12 +823,16 @@ export function getProjectPageCopy(locale: Locale) {
 }
 
 export function localizedPath(locale: Locale, path: string) {
-  if (path === "/" || path === "") {
-    return `/${locale}`;
+  if (path.startsWith("/demo") || path.startsWith("/admin") || path.startsWith("/api")) {
+    return path;
   }
 
-  if (path.startsWith("/demo") || path.startsWith("/admin")) {
-    return path;
+  if (locale === "en") {
+    return path === "" ? "/" : path;
+  }
+
+  if (path === "/" || path === "") {
+    return `/${locale}`;
   }
 
   return `/${locale}${path}`;

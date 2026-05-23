@@ -33,11 +33,11 @@ export default async function AdminLoginPage({
             Secure backoffice
           </p>
           <h1 className="mt-4 max-w-3xl text-5xl font-semibold leading-tight sm:text-6xl">
-            Admin login for portfolio leads and demo operations.
+            Admin login for your portfolio CMS and hiring requests.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#d6ccbd]">
-            หน้านี้ใช้ session cookie ฝั่ง server และดึงข้อมูล lead/task/activity
-            จาก Supabase จริง โดยไม่เปิดเผย service key ไปที่ browser
+            หน้านี้ใช้ session cookie ฝั่ง server สำหรับแก้เนื้อหาเว็บ แพ็กเกจบริการ ผลงาน
+            ช่องทางติดต่อ และคำขอจ้างงาน โดยไม่เปิดเผย service key ไปที่ browser
           </p>
         </section>
 

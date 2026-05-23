@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase-admin";
+import { isLocale, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-
-const allowedServices = new Set([
-  "AI chatbot",
-  "Booking system",
-  "Dashboard",
-  "API integration",
-]);
-
-const allowedSources = new Set(["portfolio_demo", "portfolio_contact"]);
 
 function cleanText(value: unknown, maxLength: number) {
   if (typeof value !== "string") {
@@ -22,6 +14,7 @@ function cleanText(value: unknown, maxLength: number) {
 
 function cleanEmail(value: unknown) {
   const email = cleanText(value, 120);
+
   if (!email) {
     return null;
   }
@@ -32,7 +25,7 @@ function cleanEmail(value: unknown) {
 export async function POST(request: NextRequest) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase is not configured for this deployment." },
+      { error: "Contact storage is not configured yet." },
       { status: 503 },
     );
   }
@@ -43,36 +36,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const name = cleanText(body.name, 80);
-  const company = cleanText(body.company, 120);
-  const service = cleanText(body.service, 40);
-  const budget = cleanText(body.budget, 40) || "Discovery";
-  const notes = cleanText(body.notes, 240);
+  const locale = isLocale(String(body.locale)) ? (String(body.locale) as Locale) : "en";
+  const name = cleanText(body.name, 100);
+  const company = cleanText(body.company, 140) || null;
   const email = cleanEmail(body.email);
-  const source = cleanText(body.source, 40) || "portfolio_demo";
+  const channel = cleanText(body.channel, 140) || null;
+  const message = cleanText(body.message, 1200);
 
-  if (name.length < 2 || company.length < 2 || !allowedServices.has(service) || !allowedSources.has(source)) {
+  if (name.length < 2 || message.length < 8) {
     return NextResponse.json(
-      { error: "Name, company, and a valid service are required." },
+      { error: "Name and message are required." },
       { status: 400 },
     );
   }
 
   const supabase = getSupabaseAdmin();
-  const priority = budget.includes("$1k") || budget.includes("$3k") ? 5 : 3;
-
   const { data, error } = await supabase
-    .from("demo_leads")
+    .from("contact_messages")
     .insert({
+      locale,
       name,
       company,
       email,
-      service,
-      budget,
-      notes,
-      priority,
+      channel,
+      message,
       status: "new",
-      source,
     })
     .select("*")
     .single();
@@ -81,10 +69,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await supabase.from("demo_events").insert({
-    event_type: "lead_created",
-    message: `${company} requested a ${service} demo from the portfolio site.`,
-  });
-
-  return NextResponse.json({ lead: data }, { status: 201 });
+  return NextResponse.json({ message: data }, { status: 201 });
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { HomePage } from "@/components/HomePage";
+import { ServicesPageContent } from "@/components/ServicesPageContent";
 import { getPublicSiteData } from "@/lib/cms";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 
@@ -24,20 +24,20 @@ export async function generateMetadata({
   const site = await getPublicSiteData(locale);
 
   return {
-    title: `Chatchawan T. | ${site.content.home.title}`,
-    description: site.content.home.body,
+    title: `${site.content.services.title} | Chatchawan T.`,
+    description: site.content.services.body,
     alternates: {
-      canonical: locale === "en" ? "/" : `/${locale}`,
+      canonical: locale === "en" ? "/services" : `/${locale}/services`,
       languages: {
-        en: "/",
-        th: "/th",
-        zh: "/zh",
+        en: "/services",
+        th: "/th/services",
+        zh: "/zh/services",
       },
     },
   };
 }
 
-export default async function LocalizedHomePage({
+export default async function LocalizedServicesPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -50,5 +50,5 @@ export default async function LocalizedHomePage({
 
   const site = await getPublicSiteData(locale as Locale);
 
-  return <HomePage locale={locale as Locale} site={site} />;
+  return <ServicesPageContent locale={locale as Locale} site={site} />;
 }

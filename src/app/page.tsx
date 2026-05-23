@@ -1,5 +1,10 @@
 import { HomePage } from "@/components/HomePage";
+import { getPublicSiteData } from "@/lib/cms";
 
-export default function Home() {
-  return <HomePage locale="en" />;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const site = await getPublicSiteData("en");
+
+  return <HomePage locale="en" site={site} />;
 }
