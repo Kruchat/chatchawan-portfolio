@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Bot,
   Check,
   Code2,
@@ -42,12 +43,22 @@ const proofPoints = [
 
 const projects = [
   {
+    name: "AI Service CRM Live Project",
+    type: "Interactive demo",
+    summary:
+      "A playable Next.js + Supabase mini product where clients submit a project request, receive AI-style qualification, and see live CRM data update.",
+    tags: ["Next.js", "Supabase", "API route", "Live CRM"],
+    accent: "bg-[#2dd4bf]",
+    href: "/projects/ai-service-crm",
+  },
+  {
     name: "Hong Kong Mode Booking Workflow",
     type: "Tour booking platform",
     summary:
       "Next.js App Router system for tour discovery, booking flow, pickup registration, invoices, admin content, and Supabase-backed operations.",
     tags: ["Next.js", "Supabase", "Admin dashboard", "Booking flow"],
     accent: "bg-[#f6c453]",
+    href: "/demo/backoffice",
   },
   {
     name: "AI Chatbot and LINE OA Automation",
@@ -56,6 +67,7 @@ const projects = [
       "Conversation flows for lead intake, FAQ handling, booking support, and handoff logic with API integrations for small teams.",
     tags: ["AI chatbot", "Automation", "API", "LINE OA"],
     accent: "bg-[#2dd4bf]",
+    href: "/projects/ai-service-crm",
   },
   {
     name: "Responsive School and Public-Service Sites",
@@ -64,6 +76,7 @@ const projects = [
       "Fast, mobile-ready websites with structured content, forms, admin-friendly updates, and deployment support for education teams.",
     tags: ["React", "Responsive UI", "Forms", "Deployment"],
     accent: "bg-[#f87171]",
+    href: "/demo",
   },
 ];
 
@@ -120,6 +133,9 @@ export default function Home() {
             <Link className="nav-link" href="/demo">
               Demo
             </Link>
+            <Link className="nav-link" href="/projects/ai-service-crm">
+              Live Project
+            </Link>
             <a className="nav-link" href="#services">
               Services
             </a>
@@ -155,6 +171,10 @@ export default function Home() {
               <Link className="secondary-action" href="/demo">
                 <Database size={18} />
                 Live demo
+              </Link>
+              <Link className="secondary-action" href="/projects/ai-service-crm">
+                <Bot size={18} />
+                Play project
               </Link>
               <a className="secondary-action" href="#process">
                 <GitBranch size={18} />
@@ -267,7 +287,16 @@ export default function Home() {
               <p className="mt-6 font-mono text-xs uppercase text-[#6d6255]">
                 {project.type}
               </p>
-              <h3 className="mt-3 text-2xl font-semibold leading-8">{project.name}</h3>
+              <div className="mt-3 flex items-start justify-between gap-3">
+                <h3 className="text-2xl font-semibold leading-8">{project.name}</h3>
+                <Link
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-[#17130d]/15 text-[#17130d] transition hover:bg-[#17130d] hover:text-[#f7f5ef]"
+                  href={project.href}
+                  aria-label={`Open ${project.name}`}
+                >
+                  <ArrowUpRight size={18} />
+                </Link>
+              </div>
               <p className="mt-4 min-h-28 leading-7 text-[#5a5044]">{project.summary}</p>
               <div className="mt-6 flex flex-wrap gap-2">
                 {project.tags.map((tag) => (
@@ -346,7 +375,7 @@ export default function Home() {
               </p>
             </div>
             <div className="rounded-md bg-[#f7f5ef] p-5 font-mono text-sm leading-7 text-[#3b332a]">
-              <p>Next.js App Router project: this portfolio with live Supabase demo.</p>
+              <p>Next.js App Router project: live AI Service CRM with Supabase database.</p>
               <p>Tricky TypeScript fix: DB row types, API payloads, and optional UI fields.</p>
               <p>Timezone: Asia/Bangkok (UTC+7), async friendly.</p>
             </div>

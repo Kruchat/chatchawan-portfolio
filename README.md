@@ -25,6 +25,7 @@ The demo backoffice uses a real Supabase project and server-side Next.js route h
 
 - `/demo` - public client demo with live lead intake
 - `/demo/backoffice` - operations-style backoffice view
+- `/projects/ai-service-crm` - playable mini project for Upwork clients
 - `/api/demo/overview` - read live demo data
 - `/api/demo/leads` - create a demo lead
 
